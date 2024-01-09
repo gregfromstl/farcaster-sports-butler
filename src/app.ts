@@ -8,8 +8,7 @@ import {
 } from "./config";
 import { isApiErrorResponse } from "@neynar/nodejs-sdk";
 import { getLatestScores } from "./scores";
-
-const existingScores = new Set();
+import fs from "fs";
 
 // Validating necessary environment variables or configurations.
 if (!FARCASTER_BOT_MNEMONIC) {
@@ -27,8 +26,16 @@ if (!NEYNAR_API_KEY) {
  * Function to publish all new finalized scores.
  */
 const publishScores = async () => {
+    // Check if games.txt exists, if not, create it
+    if (!fs.existsSync("games.txt")) {
+        fs.writeFileSync("games.txt", "");
+    }
+
     SPORTS.forEach(async (sport) => {
         const scores = await getLatestScores(sport.sportId); // Getting the latest scores.
+        const existingScores = new Set(
+            fs.readFileSync("games.txt", "utf-8").split("\n")
+        );
         const newScores = scores.filter(
             (score) => !existingScores.has(score.id)
         ); // Filtering out the scores that have already been published.
@@ -36,7 +43,7 @@ const publishScores = async () => {
         newScores.forEach((score) => {
             const msg = `FINAL SCORE\n${score.scores[0].name}: ${score.scores[0].score}\n${score.scores[1].name}: ${score.scores[1].score}`;
             publishCast(msg, sport.channelUrl);
-            existingScores.add(score.id);
+            fs.appendFileSync("games.txt", `${score.id}\n`);
         });
     });
 };
