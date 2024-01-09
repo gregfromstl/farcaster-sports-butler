@@ -9,4 +9,8 @@ export const SPORTS = [
         sportId: "icehockey_nhl",
         channelUrl: "https://warpcast.com/~/channel/hockey",
     },
+    {
+        sportId: "basketball_nba",
+        channelUrl: "https://warpcast.com/~/channel/nba",
+    },
 ];
