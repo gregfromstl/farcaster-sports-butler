@@ -37,23 +37,21 @@ const publishScores = async () => {
  * @param msg - The message to be published.
  */
 const publishCast = async (msg: string) => {
-    console.log(msg);
-    return;
-    // try {
-    //     // Using the neynarClient to publish the cast.
-    //     await neynarClient.publishCast(SIGNER_UUID, msg);
-    //     console.log("Cast published successfully");
-    // } catch (err) {
-    //     // Error handling, checking if it's an API response error.
-    //     if (isApiErrorResponse(err)) {
-    //         console.log(err.response.data);
-    //     } else console.log(err);
-    // }
+    try {
+        // Using the neynarClient to publish the cast.
+        await neynarClient.publishCast(SIGNER_UUID, msg);
+        console.log("Cast published successfully");
+    } catch (err: any) {
+        // Error handling, checking if it's an API response error.
+        if (isApiErrorResponse(err)) {
+            console.log(err.response.data);
+        } else console.log(err);
+    }
 };
 
 // Scheduling a cron job to report scores at the top of every hour
 cron.schedule(
-    `*/1 * * * *`, // Cron time format
+    `0 * * * *`, // Cron time format
     function () {
         publishScores(); // Function to execute at the scheduled time.
     },
