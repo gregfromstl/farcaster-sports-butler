@@ -1,6 +1,11 @@
 import cron from "node-cron";
 import neynarClient from "./neynarClient";
-import { SIGNER_UUID, NEYNAR_API_KEY, FARCASTER_BOT_MNEMONIC } from "./config";
+import {
+    SIGNER_UUID,
+    NEYNAR_API_KEY,
+    FARCASTER_BOT_MNEMONIC,
+    SPORTS,
+} from "./config";
 import { isApiErrorResponse } from "@neynar/nodejs-sdk";
 import { getLatestScores } from "./scores";
 
@@ -22,13 +27,17 @@ if (!NEYNAR_API_KEY) {
  * Function to publish all new finalized scores.
  */
 const publishScores = async () => {
-    const scores = await getLatestScores(); // Getting the latest scores.
-    const newScores = scores.filter((score) => !existingScores.has(score.id)); // Filtering out the scores that have already been published.
+    SPORTS.forEach(async (sport) => {
+        const scores = await getLatestScores(sport.sportId); // Getting the latest scores.
+        const newScores = scores.filter(
+            (score) => !existingScores.has(score.id)
+        ); // Filtering out the scores that have already been published.
 
-    newScores.forEach((score) => {
-        const msg = `FINAL SCORE\n${score.scores[0].name}: ${score.scores[0].score}\n${score.scores[1].name}: ${score.scores[1].score}`;
-        publishCast(msg);
-        existingScores.add(score.id);
+        newScores.forEach((score) => {
+            const msg = `FINAL SCORE\n${score.scores[0].name}: ${score.scores[0].score}\n${score.scores[1].name}: ${score.scores[1].score}`;
+            publishCast(msg, sport.channelUrl);
+            existingScores.add(score.id);
+        });
     });
 };
 
@@ -36,10 +45,12 @@ const publishScores = async () => {
  * Function to publish a message (cast) using neynarClient.
  * @param msg - The message to be published.
  */
-const publishCast = async (msg: string) => {
+const publishCast = async (msg: string, channelUrl?: string) => {
     try {
         // Using the neynarClient to publish the cast.
-        await neynarClient.publishCast(SIGNER_UUID, msg);
+        await neynarClient.publishCast(SIGNER_UUID, msg, {
+            replyTo: channelUrl,
+        });
         console.log("Cast published successfully");
     } catch (err: any) {
         // Error handling, checking if it's an API response error.
