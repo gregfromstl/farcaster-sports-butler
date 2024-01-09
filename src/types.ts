@@ -1,6 +1,7 @@
 import { z } from "zod";
 
 export const GameResultSchema = z.object({
+    id: z.string(),
     completed: z.literal(true),
     scores: z
         .array(
