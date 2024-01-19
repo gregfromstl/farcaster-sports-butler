@@ -42,7 +42,7 @@ const publishScores = async () => {
 
         newScores.forEach((score) => {
             const msg = `FINAL SCORE\n${score.scores[0].name}: ${score.scores[0].score}\n${score.scores[1].name}: ${score.scores[1].score}`;
-            publishCast(msg, sport.channelUrl);
+            publishCast(msg);
             fs.appendFileSync("games.txt", `${score.id}\n`);
         });
     });
