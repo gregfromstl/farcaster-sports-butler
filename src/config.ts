@@ -7,10 +7,10 @@ export const NEYNAR_API_KEY = process.env.NEYNAR_API_KEY!;
 export const SPORTS = [
     {
         sportId: "icehockey_nhl",
-        channelUrl: "https://warpcast.com/~/channel/hockey",
+        // channelUrl: "https://warpcast.com/~/channel/hockey",
     },
     {
         sportId: "basketball_nba",
-        channelUrl: "https://www.nba.com",
+        // channelUrl: "https://www.nba.com",
     },
 ];
